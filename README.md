@@ -78,7 +78,7 @@ MSFD
 
 
 
-## 5. Results  
+## 4. Results  
 
 ### Evaluation Metrics  
 - **For Classification:** Accuracy, Precision, Recall, and F1-score  
@@ -98,7 +98,7 @@ MSFD
 ---
 
 
-## 6. Observations & Analysis
+## 5. Observations & Analysis
 
 ### Part_a: Binary Classification Using Handcrafted Features and ML Classifiers
 
