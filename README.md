@@ -11,7 +11,7 @@ This project focuses on identifying and segmenting face masks in images using a 
 (IMT2022118) Shashwat Chaturvedi <Shashwat.chaturvedi@iiitb.ac.in>
 
 
-(IMT2022520) Pupur Natil <Nuput.Patil@iiitb.ac.in>   <<<<-----
+(IMT2022520) Nupur Patil <Nupur.Patil@iiitb.ac.in>  
 
 
 ---
