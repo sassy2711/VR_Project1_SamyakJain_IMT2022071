@@ -184,7 +184,49 @@ The following hyperparameters and experimental settings were used in the code:
 Region Growing currently performs better for this dataset, but further tuning and hybrid approaches could yield even better results.
 
 
-### Part_d: Using UNet method to get better output.(Sassy)
+### Part_d: Using UNet method to get better output.
+    ## Face Mask Segmentation using U-Net  
+
+#### Data Preprocessing  
+- Loaded and resized images and masks to **128x128**.  
+- Normalized pixel values for consistency.  
+- Split into **80% training** and **20% testing** datasets.  
+
+#### Model Architecture  
+- Implemented **U-Net** with an **encoder-decoder** structure.  
+- Used **Conv2D, MaxPooling, UpSampling, and concatenate** layers.  
+- Applied **Dropout** at the bridge to reduce overfitting.  
+- **ReLU** activation for features, **sigmoid** for binary mask output.  
+
+#### Training Configuration  
+- **Optimizer**: Adam (learning rate = 1e-4).  
+- **Loss Function**: Binary Cross-Entropy.  
+- **Metrics**: Accuracy & Mean IoU.  
+- Used **EarlyStopping** and **ModelCheckpoint** for efficiency.  
+
+#### Evaluation  
+- Tested on validation data.  
+- **IoU Score**: **0.0063** (needs improvement).  
+- Model serves as a **baseline** for segmentation tasks.  
+## Model Performance
+
+The model's training and validation performance is visualized in the plots below. 
+
+### Loss and Accuracy Graphs
+![Loss and Accuracy](image.png)
+
+- The left plot represents the **Loss** for training and validation.
+- The right plot represents the **Accuracy** for training and validation.
+
+### Evaluation Metrics
+After evaluating the model on the validation set, the following metrics were obtained:
+
+- **Accuracy**: 0.5818  
+- **Dice Score**: 0.8799  
+- **IoU Score**: 0.7856  
+
+The metrics indicate the segmentation performance of the model, with **Dice Score** and **IoU Score** being important for assessing region-based segmentation accuracy.
+
 
 
 
