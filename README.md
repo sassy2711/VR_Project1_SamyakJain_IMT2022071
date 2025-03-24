@@ -172,6 +172,40 @@ Region Growing currently performs better for this dataset, but further tuning an
 
 
 
+## 7. How to Run the Code
+
+### Setup
+
+1. First, clone this repository and navigate into the project directory:
+   ```bash
+   git clone https://github.com/JConquers/VR_Project_1
+   cd VR_PROJECT_1
+
+   ```
+2. Set up a virtual environment and install the required dependencies:
+    
+   ```bash
+    python -m venv env
+    source env/bin/activate
+    pip install -r requirements.txt
+
+   
+3. Download the dataset as specified and ensure the dataset and MSFD directories are placed at the same level as the repository. Additionally, create a directory named output using the command mkdir output. Your final folder structure should resemble this: ```
+    ```
+    .
+    ├── dataset
+    ├── MSFD
+    ├── output
+    ├── scripts
+    └── images
+    ```
+    #### Other files like README.md, pdf, etc are not shown in this tree.
+
+5. Execute the scripts:
+
+   ##### Inside the scripts directory, you’ll find two Jupyter notebooks: part_a_b.ipynb and part_c_d.ipynb. These scripts can be executed together or separately to observe partial results.
+    ---
+
 
 
 
