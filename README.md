@@ -138,6 +138,22 @@ MSFD
   - "Without Mask" → **96% Precision, 96% Recall**  
 - This means the model is **equally good** at classifying both categories, with no major bias.
 
+#### Hyperparameters and Experiments
+
+The following hyperparameters and experimental settings were used in the code:
+
+1. **Image Resizing**: The images are resized to 64x64 pixels to match the input size required by the Convolutional Neural Network (CNN).
+   ```python
+   img = cv2.resize(img, (64, 64))  # Resize to match CNN input
+
+2. **Normalization**: The pixel values of the images are normalized to the range [0, 1] by dividing by 255.0
+   ```python
+   X = np.array(X, dtype=np.float32) / 255.0  # Normalize pixel values
+
+4. **Train-Test Split**: The dataset is split into training and testing sets with a test size of 20% and a random state of 42 for reproducibility.
+   ```python
+   train_X, test_X, train_Y, test_Y = train_test_split(X, y, test_size=0.2, random_state=42)
+
 
 ### Part_c: Segmentation using traditionals
 ##### **1. Segmentation Performance**
