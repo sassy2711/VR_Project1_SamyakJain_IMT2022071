@@ -78,7 +78,7 @@ MSFD
 
 
 
-## 5. Results  
+## 4. Results  
 
 ### Evaluation Metrics  
 - **For Classification:** Accuracy, Precision, Recall, and F1-score  
@@ -98,7 +98,7 @@ MSFD
 ---
 
 
-## 6. Observations & Analysis
+## 5. Observations & Analysis
 
 ### Part_a: Binary Classification Using Handcrafted Features and ML Classifiers
 
@@ -184,11 +184,11 @@ The following hyperparameters and experimental settings were used in the code:
 Region Growing currently performs better for this dataset, but further tuning and hybrid approaches could yield even better results.
 
 
+### Part_d: Using UNet method to get better output.(Sassy)
 
 
 
-
-## 7. How to Run the Code
+## 6. How to Run the Code
 
 ### Setup
 
