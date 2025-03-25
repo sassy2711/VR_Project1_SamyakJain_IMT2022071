@@ -172,6 +172,7 @@ The following hyperparameters and experimental settings were used in the code:
 - Adaptive to local intensity variations but **sensitive to tolerance selection**.
 - Works well on images with smooth transitions but may leak into adjacent regions.
 
+
 ##### **Otsu’s Thresholding**
 - Lower IoU of **0.3156** and Dice score of **0.4430**.
 - Global thresholding leads to **over-segmentation or under-segmentation** in non-uniform lighting conditions.
