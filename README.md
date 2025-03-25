@@ -91,7 +91,7 @@ MSFD
 | CNN | 96.31% | - | - |  
 | Region-Growing (Segmentation) | - | 0.3997 (Avg) | 0.5365 (Avg) |  
 | Otsu's Thresholding (Segmentation) | Provided below(5) | - | - |  
-| U-Net (Mask Segmentation) | *[Results pending – To be updated Sassy]* | - | - |  
+| U-Net (Mask Segmentation) | - | 0.7856(Final) | 0.8799(Final) |  
 
 
 
@@ -138,6 +138,27 @@ MSFD
   - "Without Mask" → **96% Precision, 96% Recall**  
 - This means the model is **equally good** at classifying both categories, with no major bias.
 
+#### Hyperparameters and Experiments
+
+The following hyperparameters and experimental settings were used in the code:
+
+1. **Image Resizing**: The images are resized to 64x64 pixels to match the input size required by the Convolutional Neural Network (CNN).
+   ```python
+   img = cv2.resize(img, (64, 64))  # Resize to match CNN input
+
+2. **Normalization**: The pixel values of the images are normalized to the range [0, 1] by dividing by 255.0
+   ```python
+   X = np.array(X, dtype=np.float32) / 255.0  # Normalize pixel values
+
+4. **Train-Test Split**: The dataset is split into training and testing sets with a test size of 20% and a random state of 42 for reproducibility.
+   ```python
+   train_X, test_X, train_Y, test_Y = train_test_split(X, y, test_size=0.2, random_state=42)
+
+| **Code**       | **Hyperparameters Used**                                                                 | **Experiments Done**                                      |
+|-----------------|------------------------------------------------------------------------------------------|-----------------------------------------------------------|
+| **Part B Code** | - Image Size: 64x64<br>- Test Split: 20%<br>- Layers: 2 Conv2D (32, 64 filters), 2 Dense (128, 1)<br>- Optimizer: Adam<br>- Loss: Binary cross-entropy<br>- Epochs: 50<br>- Batch Size: 32<br>- Threshold: 0.5 | - Loaded and preprocessed face mask images<br>- Defined and trained a CNN for binary classification<br>- Visualized accuracy/loss over epochs<br>- Evaluated with classification report |
+
+
 
 ### Part_c: Segmentation using traditionals
 ##### **1. Segmentation Performance**
@@ -150,6 +171,7 @@ MSFD
 - Achieved **higher accuracy**, with an IoU of **0.3997** and a Dice score of **0.5365**.
 - Adaptive to local intensity variations but **sensitive to tolerance selection**.
 - Works well on images with smooth transitions but may leak into adjacent regions.
+
 
 ##### **Otsu’s Thresholding**
 - Lower IoU of **0.3156** and Dice score of **0.4430**.
@@ -168,9 +190,115 @@ MSFD
 Region Growing currently performs better for this dataset, but further tuning and hybrid approaches could yield even better results.
 
 
+### Part_d: Using UNet method to get better output.
+
+This project explores four implementations of U-Net models for segmenting face crops from images in the MSFD dataset. Each code builds on the previous, introducing architectural changes, training strategies, and loss functions. Below is an analysis of their performance, strengths, and weaknesses.
+
+#### Dataset
+- **Source**: Images (`.\MSFD\MSFD\1\face_crop`) and masks (`.\MSFD\MSFD\1\face_crop_segmentation`).
+- **Preprocessing**: Resized to 128x128, normalized to [0, 1], split into 80% training and 20% validation.
+
+#### Model Implementations
+
+#### Code 1: Baseline U-Net
+- **Architecture**: 3 encoder levels (64, 128, 256), 512-filter bridge, 3 decoder levels, mixed precision training.
+- **Training**: 20 epochs, batch size 8, binary cross-entropy loss, `EarlyStopping`, `ModelCheckpoint`.
+- **Metrics**:
+  - Accuracy: 0.6067
+  - Dice Score: 0.0126
+  - IoU Score: 0.006
+- **Observations**: Poor segmentation (near-zero Dice/IoU), moderate accuracy likely due to background dominance. Fast inference (4s) thanks to mixed precision.
+- **Issues**: Insufficient training or data mismatch likely caused failure to segment faces.
+
+#### Code 2: Enhanced U-Net with BatchNormalization and LeakyReLU
+- **Architecture**: 3 encoder levels (64, 128, 256), 512-filter bridge, `BatchNormalization`, `LeakyReLU`.
+- **Training**: 30 epochs, batch size 8, binary cross-entropy, `EarlyStopping`, `ReduceLROnPlateau`, `ModelCheckpoint`.
+- **Metrics**:
+  - Accuracy: 0.5818
+  - Dice Score: 0.8799
+  - IoU Score: 0.7856
+- **Observations**: Excellent segmentation (high Dice/IoU), slightly lower accuracy reflects better foreground focus. Slower inference (9s) without mixed precision.
+- **Strengths**: `BatchNormalization` and adaptive learning rate improved performance significantly.
+
+#### Code 3: Deeper U-Net with Conv2DTranspose
+- **Architecture**: 4 encoder levels (64, 128, 256, 512), 1024-filter bridge, `Conv2DTranspose` with cropping.
+- **Training**: 30 epochs, batch size 8, binary cross-entropy, no callbacks.
+- **Metrics**:
+  - Accuracy: 0.5852
+  - Dice Score: 0.8686
+  - IoU Score: 0.7677
+- **Observations**: Strong segmentation (close to Code 2), deeper model adds complexity but lacks training optimization. Slowest inference (12s).
+- **Issues**: No `EarlyStopping` risks overfitting; no mixed precision increases compute cost.
+
+#### Code 4: U-Net with Dice Loss
+- **Architecture**: 3 encoder levels (64, 128, 256), 512-filter bridge, `Conv2DTranspose`, mixed precision.
+- **Training**: 20 epochs, batch size 16, custom `dice_loss`, `EarlyStopping`, `ReduceLROnPlateau`, `ModelCheckpoint`.
+- **Metrics**:
+  - Accuracy: 0.3612
+  - Dice Score: 0.4360
+  - IoU Score: 0.2787
+- **Observations**: Moderate segmentation, lowest accuracy due to Dice loss focus. Fast inference (4s) with mixed precision.
+- **Issues**: Dice loss didn’t yield high Dice/IoU, possibly due to short training or large batch size.
+
+#### Comparative Analysis
+| Code | Accuracy | Dice Score | IoU Score | Inference Time | Key Features |
+|------|----------|------------|-----------|----------------|--------------|
+| 1    | 0.6067   | 0.0126     | 0.006     | 4s             | Baseline, mixed precision |
+| 2    | 0.5818   | 0.8799     | 0.7856    | 9s             | BatchNorm, LeakyReLU, scheduler |
+| 3    | 0.5852   | 0.8686     | 0.7677    | 12s            | Deeper, Conv2DTranspose |
+| 4    | 0.3612   | 0.4360     | 0.2787    | 4s             | Dice loss, mixed precision |
+
+- **Best Segmentation**: Code 2 (Dice 0.8799, IoU 0.7856) excels, balancing architecture and training enhancements.
+- **Fastest**: Codes 1 and 4 (4s) leverage mixed precision.
+- **Worst Performer**: Code 1 fails at segmentation; Code 4 underperforms despite Dice loss.
+
+#### Recommendations
+1. **Data Validation**: Inspect image-mask pairs (especially for Code 1’s failure).
+2. **Training Duration**: Extend epochs for Codes 1 and 4 (e.g., to 30).
+3. **Loss Function**: Combine Dice and cross-entropy (e.g., for Code 4) to balance accuracy and segmentation.
+4. **Efficiency**: Add mixed precision to Codes 2 and 3 for faster inference.
+5. **Visualization**: Plot predicted vs. true masks to diagnose issues.
+
+#### Conclusion
+Codes 2 and 3 achieve robust face segmentation, with Code 2 slightly ahead due to training optimizations. Code 1 serves as a cautionary baseline, while Code 4’s Dice loss experiment suggests further tuning is needed. Future work could blend Code 2’s enhancements with Code 4’s loss approach for optimal results.  
 
 
 
+
+
+## 6. How to Run the Code
+
+### Setup
+
+1. First, clone this repository and navigate into the project directory:
+   ```bash
+   git clone https://github.com/JConquers/VR_Project_1
+   cd VR_PROJECT_1
+
+   ```
+2. Set up a virtual environment and install the required dependencies:
+    
+   ```bash
+    python -m venv env
+    source env/bin/activate
+    pip install -r requirements.txt
+
+   
+3. Download the dataset as specified and ensure the dataset and MSFD directories are placed at the same level as the repository. Additionally, create a directory named output using the command mkdir output. Your final folder structure should resemble this: ```
+    ```
+    .
+    ├── dataset
+    ├── MSFD
+    ├── output
+    ├── scripts
+    └── images
+    ```
+    #### Other files like README.md, pdf, etc are not shown in this tree.
+
+5. Execute the scripts:
+
+   ##### Inside the scripts directory, you’ll find two Jupyter notebooks: part_a_b.ipynb and part_c_d.ipynb. These scripts can be executed together or separately to observe partial results.
+    ---
 
 
 
