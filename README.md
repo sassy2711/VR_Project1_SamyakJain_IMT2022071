@@ -91,7 +91,7 @@ MSFD
 | CNN | 96.31% | - | - |  
 | Region-Growing (Segmentation) | - | 0.3997 (Avg) | 0.5365 (Avg) |  
 | Otsu's Thresholding (Segmentation) | Provided below(5) | - | - |  
-| U-Net (Mask Segmentation) | *[Results pending – To be updated Sassy]* | - | - |  
+| U-Net (Mask Segmentation) | - | 0.7856(Final) | 0.8799(Final) |  
 
 
 
