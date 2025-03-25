@@ -154,6 +154,11 @@ The following hyperparameters and experimental settings were used in the code:
    ```python
    train_X, test_X, train_Y, test_Y = train_test_split(X, y, test_size=0.2, random_state=42)
 
+| **Code**       | **Hyperparameters Used**                                                                 | **Experiments Done**                                      |
+|-----------------|------------------------------------------------------------------------------------------|-----------------------------------------------------------|
+| **Part B Code** | - Image Size: 64x64<br>- Test Split: 20%<br>- Layers: 2 Conv2D (32, 64 filters), 2 Dense (128, 1)<br>- Optimizer: Adam<br>- Loss: Binary cross-entropy<br>- Epochs: 50<br>- Batch Size: 32<br>- Threshold: 0.5 | - Loaded and preprocessed face mask images<br>- Defined and trained a CNN for binary classification<br>- Visualized accuracy/loss over epochs<br>- Evaluated with classification report |
+
+
 
 ### Part_c: Segmentation using traditionals
 ##### **1. Segmentation Performance**
