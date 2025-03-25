@@ -213,7 +213,7 @@ This project explores four implementations of U-Net models for segmenting face c
 - **Observations**: Poor segmentation (near-zero Dice/IoU), moderate accuracy likely due to background dominance. Fast inference (4s) thanks to mixed precision.
 - **Issues**: Insufficient training or data mismatch likely caused failure to segment faces.
 
-![d1](images/Approach1.png)
+![d1](images/Approch1.png)
 
 #### Code 2: Enhanced U-Net with BatchNormalization and LeakyReLU
 - **Architecture**: 3 encoder levels (64, 128, 256), 512-filter bridge, `BatchNormalization`, `LeakyReLU`.
