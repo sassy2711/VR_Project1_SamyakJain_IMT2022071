@@ -186,6 +186,9 @@ The following hyperparameters and experimental settings were used in the code:
   - **Hybrid approaches**, such as Otsu + Morphological processing, may enhance results.
   - Using **deep learning-based segmentation** for further accuracy improvement.
 
+![c1](images/partcseg.png)
+![c2](images/image.png)
+
 #### **3. Conclusion**
 Region Growing currently performs better for this dataset, but further tuning and hybrid approaches could yield even better results.
 
@@ -210,6 +213,8 @@ This project explores four implementations of U-Net models for segmenting face c
 - **Observations**: Poor segmentation (near-zero Dice/IoU), moderate accuracy likely due to background dominance. Fast inference (4s) thanks to mixed precision.
 - **Issues**: Insufficient training or data mismatch likely caused failure to segment faces.
 
+![d1](images/Approach1.png)
+
 #### Code 2: Enhanced U-Net with BatchNormalization and LeakyReLU
 - **Architecture**: 3 encoder levels (64, 128, 256), 512-filter bridge, `BatchNormalization`, `LeakyReLU`.
 - **Training**: 30 epochs, batch size 8, binary cross-entropy, `EarlyStopping`, `ReduceLROnPlateau`, `ModelCheckpoint`.
@@ -219,6 +224,7 @@ This project explores four implementations of U-Net models for segmenting face c
   - IoU Score: 0.7856
 - **Observations**: Excellent segmentation (high Dice/IoU), slightly lower accuracy reflects better foreground focus. Slower inference (9s) without mixed precision.
 - **Strengths**: `BatchNormalization` and adaptive learning rate improved performance significantly.
+![d2](images/A2.png)
 
 #### Code 3: Deeper U-Net with Conv2DTranspose
 - **Architecture**: 4 encoder levels (64, 128, 256, 512), 1024-filter bridge, `Conv2DTranspose` with cropping.
@@ -229,6 +235,7 @@ This project explores four implementations of U-Net models for segmenting face c
   - IoU Score: 0.7677
 - **Observations**: Strong segmentation (close to Code 2), deeper model adds complexity but lacks training optimization. Slowest inference (12s).
 - **Issues**: No `EarlyStopping` risks overfitting; no mixed precision increases compute cost.
+![d3](images/3.png)
 
 #### Code 4: U-Net with Dice Loss
 - **Architecture**: 3 encoder levels (64, 128, 256), 512-filter bridge, `Conv2DTranspose`, mixed precision.
@@ -239,6 +246,7 @@ This project explores four implementations of U-Net models for segmenting face c
   - IoU Score: 0.2787
 - **Observations**: Moderate segmentation, lowest accuracy due to Dice loss focus. Fast inference (4s) with mixed precision.
 - **Issues**: Dice loss didn’t yield high Dice/IoU, possibly due to short training or large batch size.
+![d4](images/A4.png)
 
 #### Comparative Analysis
 | Code | Accuracy | Dice Score | IoU Score | Inference Time | Key Features |
