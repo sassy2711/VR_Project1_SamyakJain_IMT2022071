@@ -185,47 +185,77 @@ Region Growing currently performs better for this dataset, but further tuning an
 
 
 ### Part_d: Using UNet method to get better output.
-    ## Face Mask Segmentation using U-Net  
 
-#### Data Preprocessing  
-- Loaded and resized images and masks to **128x128**.  
-- Normalized pixel values for consistency.  
-- Split into **80% training** and **20% testing** datasets.  
+This project explores four implementations of U-Net models for segmenting face crops from images in the MSFD dataset. Each code builds on the previous, introducing architectural changes, training strategies, and loss functions. Below is an analysis of their performance, strengths, and weaknesses.
 
-#### Model Architecture  
-- Implemented **U-Net** with an **encoder-decoder** structure.  
-- Used **Conv2D, MaxPooling, UpSampling, and concatenate** layers.  
-- Applied **Dropout** at the bridge to reduce overfitting.  
-- **ReLU** activation for features, **sigmoid** for binary mask output.  
+#### Dataset
+- **Source**: Images (`.\MSFD\MSFD\1\face_crop`) and masks (`.\MSFD\MSFD\1\face_crop_segmentation`).
+- **Preprocessing**: Resized to 128x128, normalized to [0, 1], split into 80% training and 20% validation.
 
-#### Training Configuration  
-- **Optimizer**: Adam (learning rate = 1e-4).  
-- **Loss Function**: Binary Cross-Entropy.  
-- **Metrics**: Accuracy & Mean IoU.  
-- Used **EarlyStopping** and **ModelCheckpoint** for efficiency.  
+#### Model Implementations
 
-#### Evaluation  
-- Tested on validation data.  
-- **IoU Score**: **0.0063** (needs improvement).  
-- Model serves as a **baseline** for segmentation tasks.  
-## Model Performance
+#### Code 1: Baseline U-Net
+- **Architecture**: 3 encoder levels (64, 128, 256), 512-filter bridge, 3 decoder levels, mixed precision training.
+- **Training**: 20 epochs, batch size 8, binary cross-entropy loss, `EarlyStopping`, `ModelCheckpoint`.
+- **Metrics**:
+  - Accuracy: 0.6067
+  - Dice Score: 0.0126
+  - IoU Score: 0.006
+- **Observations**: Poor segmentation (near-zero Dice/IoU), moderate accuracy likely due to background dominance. Fast inference (4s) thanks to mixed precision.
+- **Issues**: Insufficient training or data mismatch likely caused failure to segment faces.
 
-The model's training and validation performance is visualized in the plots below. 
+#### Code 2: Enhanced U-Net with BatchNormalization and LeakyReLU
+- **Architecture**: 3 encoder levels (64, 128, 256), 512-filter bridge, `BatchNormalization`, `LeakyReLU`.
+- **Training**: 30 epochs, batch size 8, binary cross-entropy, `EarlyStopping`, `ReduceLROnPlateau`, `ModelCheckpoint`.
+- **Metrics**:
+  - Accuracy: 0.5818
+  - Dice Score: 0.8799
+  - IoU Score: 0.7856
+- **Observations**: Excellent segmentation (high Dice/IoU), slightly lower accuracy reflects better foreground focus. Slower inference (9s) without mixed precision.
+- **Strengths**: `BatchNormalization` and adaptive learning rate improved performance significantly.
 
-### Loss and Accuracy Graphs
-![Loss and Accuracy](image.png)
+#### Code 3: Deeper U-Net with Conv2DTranspose
+- **Architecture**: 4 encoder levels (64, 128, 256, 512), 1024-filter bridge, `Conv2DTranspose` with cropping.
+- **Training**: 30 epochs, batch size 8, binary cross-entropy, no callbacks.
+- **Metrics**:
+  - Accuracy: 0.5852
+  - Dice Score: 0.8686
+  - IoU Score: 0.7677
+- **Observations**: Strong segmentation (close to Code 2), deeper model adds complexity but lacks training optimization. Slowest inference (12s).
+- **Issues**: No `EarlyStopping` risks overfitting; no mixed precision increases compute cost.
 
-- The left plot represents the **Loss** for training and validation.
-- The right plot represents the **Accuracy** for training and validation.
+#### Code 4: U-Net with Dice Loss
+- **Architecture**: 3 encoder levels (64, 128, 256), 512-filter bridge, `Conv2DTranspose`, mixed precision.
+- **Training**: 20 epochs, batch size 16, custom `dice_loss`, `EarlyStopping`, `ReduceLROnPlateau`, `ModelCheckpoint`.
+- **Metrics**:
+  - Accuracy: 0.3612
+  - Dice Score: 0.4360
+  - IoU Score: 0.2787
+- **Observations**: Moderate segmentation, lowest accuracy due to Dice loss focus. Fast inference (4s) with mixed precision.
+- **Issues**: Dice loss didn’t yield high Dice/IoU, possibly due to short training or large batch size.
 
-### Evaluation Metrics
-After evaluating the model on the validation set, the following metrics were obtained:
+#### Comparative Analysis
+| Code | Accuracy | Dice Score | IoU Score | Inference Time | Key Features |
+|------|----------|------------|-----------|----------------|--------------|
+| 1    | 0.6067   | 0.0126     | 0.006     | 4s             | Baseline, mixed precision |
+| 2    | 0.5818   | 0.8799     | 0.7856    | 9s             | BatchNorm, LeakyReLU, scheduler |
+| 3    | 0.5852   | 0.8686     | 0.7677    | 12s            | Deeper, Conv2DTranspose |
+| 4    | 0.3612   | 0.4360     | 0.2787    | 4s             | Dice loss, mixed precision |
 
-- **Accuracy**: 0.5818  
-- **Dice Score**: 0.8799  
-- **IoU Score**: 0.7856  
+- **Best Segmentation**: Code 2 (Dice 0.8799, IoU 0.7856) excels, balancing architecture and training enhancements.
+- **Fastest**: Codes 1 and 4 (4s) leverage mixed precision.
+- **Worst Performer**: Code 1 fails at segmentation; Code 4 underperforms despite Dice loss.
 
-The metrics indicate the segmentation performance of the model, with **Dice Score** and **IoU Score** being important for assessing region-based segmentation accuracy.
+#### Recommendations
+1. **Data Validation**: Inspect image-mask pairs (especially for Code 1’s failure).
+2. **Training Duration**: Extend epochs for Codes 1 and 4 (e.g., to 30).
+3. **Loss Function**: Combine Dice and cross-entropy (e.g., for Code 4) to balance accuracy and segmentation.
+4. **Efficiency**: Add mixed precision to Codes 2 and 3 for faster inference.
+5. **Visualization**: Plot predicted vs. true masks to diagnose issues.
+
+#### Conclusion
+Codes 2 and 3 achieve robust face segmentation, with Code 2 slightly ahead due to training optimizations. Code 1 serves as a cautionary baseline, while Code 4’s Dice loss experiment suggests further tuning is needed. Future work could blend Code 2’s enhancements with Code 4’s loss approach for optimal results.  
+
 
 
 
